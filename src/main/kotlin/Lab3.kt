@@ -32,31 +32,31 @@ class Square(val edge: Double) : Shape {
     }
 }
 
-class Rectangle(val FirstEdge: Double, val SecEdge: Double) : Shape {
-    override fun calcArea(): Double = FirstEdge * SecEdge
+class Rectangle(val firstEdge: Double, val secEdge: Double) : Shape {
+    override fun calcArea(): Double = firstEdge * secEdge
 
-    override fun calcPerimeter(): Double = 2 * FirstEdge + 2 * SecEdge
+    override fun calcPerimeter(): Double = 2 * firstEdge + 2 * secEdge
 
     init {
-        if ((FirstEdge < 0) or (SecEdge < 0)) {
+        if ((firstEdge < 0) or (secEdge < 0)) {
             throw IllegalArgumentException("Size error")
         }
     }
 }
 
-class Triangle(val FirstEdge: Double, val SecEdge: Double, val ThirdEdge: Double) : Shape {
+class Triangle(val firstEdge: Double, val secEdge: Double, val thirdEdge: Double) : Shape {
     override fun calcArea(): Double {
-        val SemiPer = calcPerimeter() * 0.5
-        return sqrt(SemiPer * (SemiPer - FirstEdge) * (SemiPer - SecEdge) * (SemiPer - ThirdEdge))
+        val semiPer = calcPerimeter() * 0.5
+        return sqrt(semiPer * (semiPer - firstEdge) * (semiPer - secEdge) * (semiPer - thirdEdge))
     }
 
-    override fun calcPerimeter(): Double = FirstEdge + SecEdge + ThirdEdge
+    override fun calcPerimeter(): Double = firstEdge + secEdge + thirdEdge
 
     init {
-        if ((FirstEdge < 0) or (SecEdge < 0) or (ThirdEdge < 0)) {
+        if ((firstEdge < 0) or (secEdge < 0) or (thirdEdge < 0)) {
             throw IllegalArgumentException("Size error")
         }
-        if ((FirstEdge + SecEdge <= ThirdEdge) or (FirstEdge + ThirdEdge <= SecEdge) or (SecEdge + ThirdEdge <= FirstEdge)) {
+        if ((firstEdge + secEdge <= thirdEdge) or (firstEdge + thirdEdge <= secEdge) or (secEdge + thirdEdge <= firstEdge)) {
             throw IllegalArgumentException("Size error")
         }
     }
@@ -65,8 +65,8 @@ class Triangle(val FirstEdge: Double, val SecEdge: Double, val ThirdEdge: Double
 interface ShapeFactory {
     fun createCircle(radius: Double): Circle
     fun createSquare(edge: Double): Square
-    fun createRectangle(FirstEdge: Double, SecEdge: Double): Rectangle
-    fun createTriangle(FirstEdge: Double, SecEdge: Double, ThirdEdge: Double): Triangle
+    fun createRectangle(firstEdge: Double, SecEdge: Double): Rectangle
+    fun createTriangle(firstEdge: Double, SecEdge: Double, ThirdEdge: Double): Triangle
 
     fun createRandomCircle(): Circle
     fun createRandomSquare(): Square
@@ -81,10 +81,10 @@ class ShapeFactoryImpl : ShapeFactory {
 
     override fun createSquare(edge: Double): Square = Square(edge)
 
-    override fun createRectangle(FirstEdge: Double, SecEdge: Double): Rectangle = Rectangle(FirstEdge, SecEdge)
+    override fun createRectangle(firstEdge: Double, secEdge: Double): Rectangle = Rectangle(firstEdge, secEdge)
 
-    override fun createTriangle(FirstEdge: Double, SecEdge: Double, ThirdEdge: Double): Triangle =
-        Triangle(FirstEdge, SecEdge, ThirdEdge)
+    override fun createTriangle(firstEdge: Double, secEdge: Double, thirdEdge: Double): Triangle =
+        Triangle(firstEdge, secEdge, thirdEdge)
 
     override fun createRandomCircle(): Circle = createCircle(Random.nextDouble(0.0, Int.MAX_VALUE.toDouble()))
 
@@ -96,13 +96,13 @@ class ShapeFactoryImpl : ShapeFactory {
     )
 
     override fun createRandomTriangle(): Triangle {
-        val FirstEdge = Random.nextDouble(0.0, Int.MAX_VALUE.toDouble())
-        val SecEdge = Random.nextDouble(0.0, Int.MAX_VALUE.toDouble())
-        val ThirdEdge = Random.nextDouble(
-            kotlin.math.max(FirstEdge, SecEdge) - kotlin.math.min(FirstEdge, SecEdge),
-            FirstEdge + SecEdge
+        val firstEdge = Random.nextDouble(0.0, Int.MAX_VALUE.toDouble())
+        val secEdge = Random.nextDouble(0.0, Int.MAX_VALUE.toDouble())
+        val thirdEdge = Random.nextDouble(
+            kotlin.math.max(firstEdge, secEdge) - kotlin.math.min(firstEdge, secEdge),
+            firstEdge + secEdge
         )
-        return createTriangle(FirstEdge, SecEdge, ThirdEdge)
+        return createTriangle(firstEdge, secEdge, thirdEdge)
     }
 
     override fun createRandomShape(): Shape {
