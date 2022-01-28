@@ -15,7 +15,7 @@
 }*/
 
 //LAB 1
-fun main() {
+/*fun main() {
     println("Left alignment:")
     var resul = alignText(
         "Kaedehara Kazuha is a samurai from Inazuma who found shelter in the Southern Cross fleet at Li Yue. This kind and carefree young man has experienced a lot in the past." +
@@ -36,4 +36,12 @@ fun main() {
                 "Kazuha lives in wanderings, overcoming the path during the day, and at night falling asleep on the ground under a blanket of sky and stars. Neither wealth nor fame attracts him. For him, it is only important to live in harmony with the world. Although he often sleeps in the open, whether it be summer or winter, he is not at all disturbed by the impending bad weather. Yes, and the rain with the wind seems to avoid it and always bypass it. ", 18, Alignment.CENTER
     )
     println(resul)
+}*/
+
+//LAB 2
+fun main() {
+    val input = "(((47-15)*28    -36+19-84+71+54))"
+    val output = reversePolishNotation(input)
+    println(input + "\n" + output)
+    print("Calculation result : ${calculate(output)}")
 }
