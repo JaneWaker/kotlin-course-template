@@ -1,7 +1,10 @@
+import kotlin.math.*
+
 enum class Alignment {
     LEFT,
     RIGHT,
     CENTER,
+    /*JUSTIFY,*/
 }
 
 fun alignText(
@@ -9,85 +12,97 @@ fun alignText(
     lineWidth: Int = 120,
     alignment: Alignment = Alignment.LEFT
 ): String {
-    if (lineWidth < 1)
-        throw IllegalArgumentException("Error with line width")
     return when (alignment) {
         Alignment.LEFT -> toText(alignLeft(text, lineWidth))
         Alignment.RIGHT -> toText(alignRight(text, lineWidth))
         Alignment.CENTER -> toText(alignCenter(text, lineWidth))
+        /*Alignment.JUSTIFY -> toText(alignJustify(text, lineWidth))*/
     }
 }
 
 private fun toText(listOfText: MutableList<String>): String {
-    var text = ""
+    var textFromString = ""
     for (string in listOfText) {
-        text += "$string\n"
+        textFromString += string + "\n"
     }
-    return text
+
+
+    return textFromString
 }
 
 private fun alignLeft(text: String, lineWidth: Int): MutableList<String> {
-    val word = text.split(" ").toMutableList()
-    val newText: MutableList<String> = mutableListOf()
-    var characterStr = ""
+    val editedText: MutableList<String> = mutableListOf()
+    val word = text.split(' ').toMutableList()
+    var charStr = ""
     var i = 0
     while (i <= word.lastIndex) {
-        if ((1 + characterStr.length + word[i].length) <= lineWidth) {
-            characterStr += word[i++] + ' '
-        } else if ((characterStr.length + word[i].length) == lineWidth) {
-            characterStr += word[i++]
-            newText.add(characterStr)
-            characterStr = ""
-        } else if (characterStr.isEmpty() and (word[i].length >= lineWidth)) {
+        if ((1 + charStr.length + word[i].length) <= lineWidth) {
+            charStr += word[i++] + ' '
+        } else if ((charStr.length + word[i].length) == lineWidth) {
+            charStr += word[i++]
+            editedText.add(charStr)
+            charStr = ""
+        } else if ((1 + charStr.length + word[i].length) > lineWidth) {
+            editedText.add(charStr)
+            charStr = ""
+        } else if (charStr.isEmpty() and (word[i].length >= lineWidth)) {
             var greaterStringLength = word[i]
-            while ((greaterStringLength.length >= lineWidth) and greaterStringLength.isNotBlank()) {
-                newText.add(greaterStringLength.substring(0, lineWidth))
+            while (lineWidth < greaterStringLength.length) {
+                editedText.add(greaterStringLength.substring(0, lineWidth))
                 greaterStringLength = greaterStringLength.substring(lineWidth)
             }
-            if (greaterStringLength.length <= lineWidth) {
+            if (lineWidth > greaterStringLength.length) {
                 word[i] = greaterStringLength
             }
-        } else
-            if ((1 + characterStr.length + word[i].length) > lineWidth) {
-                newText.add(characterStr)
-                characterStr = ""
-            }
+        }
     }
-    if (characterStr.isNotEmpty()) newText.add(characterStr)
-    for (j in 0 until newText.size) {
-        if (newText[j].last() == ' ')
-            newText[j] = newText[j].substring(0, newText[j].length - 1)
+    for (j in 0 until editedText.size) {
+        if (editedText[j].last() == ' ') {
+            editedText[j] = editedText[j].substring(0, editedText[j].length - 1)
+        }
     }
 
-    return newText
+
+    return editedText
 }
+
 
 private fun alignRight(text: String, lineWidth: Int): MutableList<String> {
-    val alignLeftText = alignLeft(text, lineWidth)
-    val newText: MutableList<String> = mutableListOf()
-    for (string in alignLeftText) {
-        newText.add(
+    val alignLeftT = alignLeft(text, lineWidth)
+    val editedText: MutableList<String> = mutableListOf()
+    for (string in alignLeftT) {
+        editedText.add(
             "".padStart(
-                lineWidth - string.length,
+                abs(lineWidth - string.length),
                 ' '
-            ) + string)
-    }
-    return newText
-}
-
-private fun alignCenter(text: String, lineWidth: Int): MutableList<String> {
-    val alignLeftText = alignLeft(text, lineWidth)
-    val newText: MutableList<String> = mutableListOf()
-    for (string in alignLeftText) {
-        newText.add(
-            "".padStart(
-                (lineWidth - string.length) / 2,
-                ' '
-            ) + string + "".padStart(
-                (lineWidth - string.length) / 2,
-                ' ')
+            ) + string
         )
     }
-    return newText
+
+
+    return editedText
 }
 
+
+private fun alignCenter(text: String, lineWidth: Int): MutableList<String> {
+    val alignLeftT = alignLeft(text, lineWidth)
+    val editedText: MutableList<String> = mutableListOf()
+    for (string in alignLeftT) {
+        editedText.add(
+            "".padStart(
+                abs(lineWidth - string.length) / 2,
+                ' '
+            ) + string + "".padStart(
+                abs(lineWidth - string.length) / 2,
+                ' '
+            )
+        )
+    }
+
+
+    return editedText
+}
+
+/*private fun alignJustify(text: String, lineWidth: Int): MutableList<String> {
+
+}*/
