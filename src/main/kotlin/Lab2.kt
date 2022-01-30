@@ -1,121 +1,134 @@
 import java.util.*
-import kotlin.math.*
 
-class Calculate {
+class Expression {
     companion object {
-        private val LEVEL_4: List<String> = listOf("^")
-        private val LEVEL_3: List<String> = listOf("*", "/")
-        private val LEVEL_2: List<String> = listOf("+", "-")
-        private val LEVEL_1: List<String> = listOf("(")
+        private val DegreeOf: List<String> = listOf(element = "^")
+        private val MultAndDivis: List<String> = listOf("*", "/")
+        private val AddAndDiff: List<String> = listOf("+", "-")
+        private val Bracket: List<String> = listOf(element = "(")
 
-        fun operate(operation: String): Boolean {
-            if (LEVEL_4.contains(operation)) return true
-            if (LEVEL_3.contains(operation)) return true
-            if (LEVEL_2.contains(operation)) return true
-            if (LEVEL_1.contains(operation)) return true
-            return false
+        fun priority(operator: String): Int {
+            return when (operator) {
+                "^" -> 4
+                "*" -> 3
+                "/" -> 3
+                "+" -> 2
+                "-" -> 2
+                "(" -> 1
+                ")" -> 1
+                else -> -1
+            }
         }
 
-        fun priority(operation: String): Int {
-            if (LEVEL_4.contains(operation)) return 4
-            if (LEVEL_3.contains(operation)) return 3
-            if (LEVEL_2.contains(operation)) return 2
-            if (LEVEL_1.contains(operation)) return 1
-            return -1
+        fun operatedTF(operation: String): Boolean {
+            return (DegreeOf.contains(operation)) or (MultAndDivis.contains(operation)) or (AddAndDiff.contains(
+                operation
+            )) or (Bracket.contains(
+                operation
+            ))
         }
     }
 }
 
 fun reversePolishNotation(expression: String): String {
-    var postfix = ""
-    val inputArray = expression.filter { !it.isWhitespace() }.toCharArray()
-    val operStack: Stack<String> = Stack()
-    var function = ""
-    var unary = true
+    val inputExpression = expression.filter {
+        it != ' '
+    }.toCharArray()
+    val stack: Stack<String> = Stack()
+    var afterSym = ""
     var i = 0
-    while (i < inputArray.size) {
-        if (inputArray[0] == ')' || inputArray[0] == '*' || inputArray[0] == '/' || inputArray[0] == '^') {
-            throw Exception()
-        }
-        if (i != 0 && inputArray[i].isDigit() && postfix.isNotEmpty()) {
-            postfix += " "
-        }
-        while (inputArray[i].isDigit()) {
-            postfix += inputArray[i];
-            i++;
-            if (i == inputArray.size) break
-        }
-        if (i == inputArray.size) break
-        if (inputArray[i] == '(') {
-            operStack.push(inputArray[i].toString());
-            ++i;
-            continue
-        } else if (inputArray[i] == ')') {
-            val operList = operStack.reversed()
-            for (operation in operList) {
-                if (operation == "(") {
-                    operStack.pop()
-                    break
-                } else postfix += " " + operStack.pop()
+    while (i < inputExpression.size) {
+        if (i > 0) {
+            if (afterSym.isNotEmpty()) {
+                if (inputExpression[i].isDigit()) {
+                    afterSym += " "
+                }
             }
-        } else {
-            if (operStack.isNotEmpty() && Calculate.operate(inputArray[i].toString())) {
-                val operList = operStack.reversed()
-                for (operation in operList) {
-                    if (Calculate.priority(operation) >= Calculate.priority(
-                            inputArray[i].toString()
-                        )
-                    ) {
-                        postfix += " " + operStack.pop()
+        }
+        while (inputExpression[i].isDigit()) {
+            afterSym += inputExpression[i]
+            i++
+        }
+
+        if (inputExpression[i] == '(') {
+            stack.push(inputExpression[i].toString())
+            i++
+            continue
+        } else if (inputExpression[i] == ')') {
+            val list = stack.reversed()
+            for (j in list) {
+                if (j == "(") {
+                    stack.pop()
+                    break
+                } else {
+                    afterSym += " " + stack.pop()
+                }
+            }
+        } else if (stack.isNotEmpty()) {
+            if (Expression.operatedTF(inputExpression[i].toString())) {
+                val list = stack.reversed()
+                for (j in list) {
+                    if (Expression.priority(inputExpression[i].toString()) <= Expression.priority(j)) {
+                        afterSym += " " + stack.pop()
                     } else {
-                        operStack.push(inputArray[i].toString())
-                        break
-                    }
-                    if (operStack.empty()) {
-                        operStack.push(inputArray[i].toString())
+                        stack.push(inputExpression[i].toString())
                         break
                     }
                 }
-            } else {
-                if (Calculate.operate(inputArray[i].toString())) operStack.push(inputArray[i].toString())
             }
         }
-        ++i
+        i++
     }
-    if (!operStack.empty()) operStack.withIndex().reversed()
-        .forEach { operation ->
-            postfix += " " + operation.value; operStack.pop()
+    if (stack.isNotEmpty()) {
+        stack.withIndex().reversed().forEach { operation ->
+            afterSym += " " + operation.value
         }
-    if (postfix.contains("(") || postfix.contains(")")) {
-        throw Exception()
     }
-    return postfix
+
+
+    return afterSym
 }
 
-fun calculate(input: String?): Float {
-    val result: Stack<String> = Stack()
-    if (input == null) {
-        throw Exception()
-    }
-    val parts = input.split(" ")
-    var leftOper = 0f
-    var rightOper: Float
-    var operResul = 0f
-    for (part in parts) {
-        if (part.toIntOrNull() != null) {
-            result.push(part)
-        } else {
-            rightOper = result.pop().toFloat()
-            leftOper = result.pop().toFloat()
-            when (part) {
-                "+" -> operResul = leftOper + rightOper
-                "-" -> operResul = leftOper - rightOper
-                "*" -> operResul = leftOper * rightOper
-                "/" -> operResul = leftOper / rightOper
-                "^" -> operResul = leftOper.pow(rightOper)
+
+fun calculation(input: String?): String? {
+    val resultExpression: Stack<String> = Stack()
+    var firstOperand: Float
+    var secondOperand: Float
+    var resultInOperation = 0F
+    val values = input?.split(' ')
+    if (values != null) {
+        for (numeric in values) {
+            if (numeric.toUIntOrNull() != null) {
+                resultExpression.push(numeric)
+            } else {
+                secondOperand = resultExpression.pop().toFloat()
+                firstOperand = resultExpression.pop().toFloat()
+                when (numeric) {
+                    "+" -> {
+                        resultInOperation = firstOperand + secondOperand
+                    }
+                    "-" -> {
+                        resultInOperation = firstOperand - secondOperand
+                    }
+                    "*" -> {
+                        resultInOperation = firstOperand * secondOperand
+                    }
+                    "/" -> {
+                        resultInOperation = firstOperand / secondOperand
+                    }
+                    "^" -> {
+                        for (i: Int in 0 until secondOperand.toInt()) {
+                            resultInOperation *= firstOperand
+                        }
+                    }
+                }
+                resultInOperation.toString()
+                resultExpression.push(resultInOperation.toString())
             }
-            result.push(operResul.toString())
         }
     }
-    return result.pop().toFloat()
+
+
+    return resultExpression.pop()
 }
+
