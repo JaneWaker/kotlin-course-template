@@ -46,9 +46,17 @@
 }*/
 
 //LAB 2
-fun main() {
+/*fun main() {
     val input = "(((47-15)*28    -36+19-84+71+54))"
     val output = reversePolishNotation(input)
     print("Calculation result : ${calculation(output)}")
+}*/
+
+//NEWLAB
+fun main() {
+    val text = "aaaddd aaaddd aaaddd!!!!!!!!dfxthxdrhxzdxrdgzdfncfgn"
+    println("Character frequency: ${occurrenceFrequency(text)}")
+    println("The most common character: ${characterSearch(text)}")
+    println("The most common word: ${wordSearch(text)}")
 }
 
